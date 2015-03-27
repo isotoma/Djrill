@@ -142,7 +142,11 @@ class DjrillBackend(BaseEmailBackend):
         from_name, from_email = parseaddr(sender)
 
         to_list = self._make_mandrill_to_list(message, message.to, "to")
-        to_list += self._make_mandrill_to_list(message, message.cc, "cc")
+        try:
+            ccs = message.cc
+        except AttributeError:
+            ccs = []
+        to_list += self._make_mandrill_to_list(message, ccs, "cc")
         to_list += self._make_mandrill_to_list(message, message.bcc, "bcc")
 
         content = "html" if message.content_subtype == "html" else "text"
